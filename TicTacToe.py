@@ -54,13 +54,18 @@ class TTT:
 
         if any([col_win(self.moves, player),
         row_win(self.moves, player),
-        diag_win(self.moves, player)]):
+        diag_win(self.moves, player)])\
+        or sum(self.moves, []).count(0) == 0:
+
             # Disable buttons
             for i in reversed(range(self.layout.count())):
                 try: self.layout.itemAt(i).widget().disconnect()
                 except Exception: pass
             # Show winner
-            self.label_winner = QLabel(f'The winner is {evaluate(self.moves)}', self.win)
+            if sum(self.moves, []).count(0) == 0:
+                self.label_winner = QLabel("It's a tie.")
+            else:
+                self.label_winner = QLabel(f'The winner is {evaluate(self.moves)}', self.win)
             self.label_winner.move(300, 150)
             self.layout.addWidget(self.label_winner)
             # Rest button
@@ -69,22 +74,6 @@ class TTT:
             self.layout.addWidget(self.reset)
 
             return True
-        elif sum(self.moves, []).count(0) == 0:
-            # Disable buttons
-            for i in reversed(range(self.layout.count())):
-                try: self.layout.itemAt(i).widget().disconnect()
-                except Exception: pass
-            # Show winner
-            self.label_winner = QLabel("It's a tie.")
-            self.label_winner.move(300, 150)
-            self.layout.addWidget(self.label_winner)
-            # Rest button
-            self.reset = QPushButton('Reset')
-            self.reset.clicked.connect(self.restart)
-            self.layout.addWidget(self.reset)
-
-            return True
-
         return False
 
     def bot(self):
@@ -96,8 +85,6 @@ class TTT:
         btn = self.layout.itemAt(ind).widget()
         btn.setText(self.turn)
         self.moves[move[0]][move[1]] = 2
-
-        print(self.moves)
 
         self.check()
 

@@ -54,6 +54,6 @@ def evaluate(board):
     if np.all(board != 0) and winner == 0:
         winner = -1
 
-    winner_player = 'X' if winner == 1 else 2
+    winner_player = 'X' if winner == 1 else 'O'
 
     return winner_player

@@ -51,20 +51,24 @@ class AI:
         all_wins = []
 
         for c in empty_cells:
+            self.player = 2
+
             m_bord = copy.deepcopy(self.board)
 
             m_bord[c[0]][c[1]] = self.player
 
+            all_cell_values[c[0], c[1]] = [m_bord]
+
             if self.checkWin(m_bord):
-                all_wins.append(m_bord)
                 if evaluate(m_bord) == 'O':
+                    all_wins.append(m_bord)
                     self.score_O += 1
                 else:
                     self.score_O -= 1
             else:
                 all_possibilities.append(m_bord)
 
-            self.player = 2 if self.player == 1 else 1
+            self.player = 1
 
             for i in range(depth):
                 vals = [b for b in all_possibilities if [item for sublist in b for item in sublist].count(0) == depth-i]
@@ -76,44 +80,38 @@ class AI:
 
                         b_copy[cell[0]][cell[1]] = self.player
 
+                        all_cell_values[c[0], c[1]].append(b_copy)
+
                         if self.checkWin(b_copy):
-                            all_wins.append(b_copy)
                             if evaluate(m_bord) == 'O':
+                                all_wins.append(b_copy)
                                 self.score_O += 1
                             else:
                                 self.score_O -= 1
                         else:
                             all_possibilities.append(b_copy)
 
-                    self.player = 2 if self.player == 1 else 1
-
-            all_cell_values[c[0], c[1]] = self.score_O
+                self.player = 2 if self.player == 1 else 1
 
             all_possibilities = []
-            all_wins = []
             self.score_O = 0
 
         # print(all_cell_values)
-        max_points_move = max(all_cell_values.values())
-        best_move = list(all_cell_values.keys())[list(all_cell_values.values()).index(max_points_move)]
+        # max_points_move = min(all_cell_values.values())
+        # best_move = list(all_cell_values.keys())[list(all_cell_values.values()).index(max_points_move)]
 
-        print(best_move)
+        flattend_win_boards = [[item for sublist in w for item in sublist].count(0) for w in all_wins]
+        shortest_win_ind = flattend_win_boards.index(max(flattend_win_boards))
+        shortest_win = all_wins[shortest_win_ind]
 
-        return best_move
+        for k,v in all_cell_values.items():
+            for board in v:
+                if board == shortest_win:
+                    best_move = k
 
-        # if self.board[best_move[0]][best_move[1]] == 0:
-        #     print(best_move)
-        #
-        #     return best_move
-        # else:
-        #     for i in range(len(all_cell_values.values())):
-        #         max_points_move = sorted(all_cell_values.values())[-i]
-        #         best_move = list(all_cell_values.keys())[list(all_cell_values.values()).index(max_points_move)]
-        #
-        #         if self.board[best_move[0], best_move[1]] == 0:
-        #             print(best_move)
-        #
-        #             return best_move
+                    print(best_move)
+
+                    return best_move
 
 if __name__ == '__main__':
     board = randBoard()
