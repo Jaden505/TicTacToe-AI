@@ -51,9 +51,20 @@ def evaluate(board):
                 diag_win(board, player)):
             winner = player
 
-    if np.all(board != 0) and winner == 0:
-        winner = -1
-
     winner_player = 'X' if winner == 1 else 'O'
 
+    if np.all(board != 0) and winner == 0:
+        winner_player = -1
+
     return winner_player
+
+def player_score(state):
+    if evaluate(state) == 'O':
+        score = +1
+    elif evaluate(state) == 'X':
+        score = -1
+    else:
+        score = 0
+
+    return score
+

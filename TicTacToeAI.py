@@ -1,7 +1,7 @@
 from random import randrange
-import copy
+from math import inf as infinity
 
-from Evaluations import row_win, col_win, diag_win, evaluate
+from Evaluations import row_win, col_win, diag_win, evaluate, player_score
 
 def randBoard():
     board = [[0, 0, 0],
@@ -18,17 +18,13 @@ def randBoard():
     return board
 
 class AI:
-
-    def __init__(self, board):
-        self.board = board
+    def __init__(self):
         self.player = 2
-        self.score_O = 0    # Needs to get as high as possible 2
-        self.turn = True
 
-    def checkWin(self, m_bord):
+    def gameOver(self, m_bord, depth):
         if any([col_win(m_bord, self.player),
                 row_win(m_bord, self.player),
-                diag_win(m_bord, self.player)]):
+                diag_win(m_bord, self.player)]) or depth == 0:
             return True
         else:
             return False
@@ -45,77 +41,39 @@ class AI:
 
         return cells, depth
 
-    def minimax(self, empty_cells, depth):
-        all_cell_values = {}
-        all_possibilities = []
-        all_wins = []
+    def minimax(self, board, empty_cells, depth):
+        if self.player == 2:
+            best = [-1, -1, -infinity]
+        else:
+            best = [-1, -1, +infinity]
 
-        for c in empty_cells:
-            self.player = 2
+        if self.gameOver(board, depth):
+            score = player_score(board)
+            return [-1, -1, score]
 
-            m_bord = copy.deepcopy(self.board)
+        for cell in self.emptyCells(board)[0]:
+            x, y = cell[0], cell[1]
+            board[x][y] = self.player
+            self.player = 2 if self.player == 1 else 1
+            score = self.minimax(board, empty_cells, depth-1)
+            board[x][y] = 0
+            score[0], score[1] = x, y
 
-            m_bord[c[0]][c[1]] = self.player
-
-            all_cell_values[c[0], c[1]] = [m_bord]
-
-            if self.checkWin(m_bord):
-                if evaluate(m_bord) == 'O':
-                    all_wins.append(m_bord)
-                    self.score_O += 1
-                else:
-                    self.score_O -= 1
+            if self.player == 2:
+                if score[2] > best[2]:
+                    best = score  # max value
             else:
-                all_possibilities.append(m_bord)
+                if score[2] < best[2]:
+                    best = score  # min value
 
-            self.player = 1
-
-            for i in range(depth):
-                vals = [b for b in all_possibilities if [item for sublist in b for item in sublist].count(0) == depth-i]
-                for b in vals:
-                    ec, d = self.emptyCells(b)
-
-                    for cell in ec:
-                        b_copy = copy.deepcopy(b)
-
-                        b_copy[cell[0]][cell[1]] = self.player
-
-                        all_cell_values[c[0], c[1]].append(b_copy)
-
-                        if self.checkWin(b_copy):
-                            if evaluate(m_bord) == 'O':
-                                all_wins.append(b_copy)
-                                self.score_O += 1
-                            else:
-                                self.score_O -= 1
-                        else:
-                            all_possibilities.append(b_copy)
-
-                self.player = 2 if self.player == 1 else 1
-
-            all_possibilities = []
-            self.score_O = 0
-
-        # print(all_cell_values)
-        # max_points_move = min(all_cell_values.values())
-        # best_move = list(all_cell_values.keys())[list(all_cell_values.values()).index(max_points_move)]
-
-        flattend_win_boards = [[item for sublist in w for item in sublist].count(0) for w in all_wins]
-        shortest_win_ind = flattend_win_boards.index(max(flattend_win_boards))
-        shortest_win = all_wins[shortest_win_ind]
-
-        for k,v in all_cell_values.items():
-            for board in v:
-                if board == shortest_win:
-                    best_move = k
-
-                    print(best_move)
-
-                    return best_move
+        return best
 
 if __name__ == '__main__':
-    board = randBoard()
-    bot = AI(board)
-    print(board)
-    empty_cells, depth = bot.emptyCells(board)
-    bot.minimax(empty_cells, depth)
+    brd = randBoard()
+    # brd = [[0, 0, 0], [1, 2, 0], [1, 2, 0]]
+    print(brd)
+    bot = AI()
+    ecs, d = bot.emptyCells(brd)
+    b = bot.minimax(brd, ecs, d)
+    print(b)
+

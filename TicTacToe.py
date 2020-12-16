@@ -77,10 +77,12 @@ class TTT:
         return False
 
     def bot(self):
-        bot = AI(self.moves)
+        bot = AI()
         empty_cells, depth = bot.emptyCells(self.moves)
-        move = bot.minimax(empty_cells, depth)
+        best = bot.minimax(self.moves, empty_cells, depth)
+        move = (best[0], best[1])
         ind = ((move[0] * 3) + (move[1] + 1))-1
+        print(best, move)
 
         btn = self.layout.itemAt(ind).widget()
         btn.setText(self.turn)
