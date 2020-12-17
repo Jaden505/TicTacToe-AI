@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from functools import partial
 
 from Evaluations import row_win, col_win, diag_win, evaluate
-from TicTacToeAI import AI
+from TicTacToeAI import gameOver, emptyCells, minimax
 
 class TTT:
 
@@ -77,12 +77,12 @@ class TTT:
         return False
 
     def bot(self):
-        bot = AI()
-        empty_cells, depth = bot.emptyCells(self.moves)
-        best = bot.minimax(self.moves, empty_cells, depth)
+        print(self.moves)
+        empty_cells, depth = emptyCells(self.moves)
+        best = minimax(self.moves, depth, -1)
         move = (best[0], best[1])
         ind = ((move[0] * 3) + (move[1] + 1))-1
-        print(best, move)
+        print(best, move, ind)
 
         btn = self.layout.itemAt(ind).widget()
         btn.setText(self.turn)
