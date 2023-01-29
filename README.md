@@ -6,4 +6,5 @@ I created an AI that makes sure you can't win. You can tie against it, but winni
 
 The program opens up a Tkinter window which you can play in.
 
-Enjoy losing!
+You can play against the AI by cloning the repo and installing the requirements.
+Enjoy!
