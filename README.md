@@ -1,6 +1,6 @@
 # TicTacToe-AI
 
-You think you are good at tic tac toe? Try and beat me.
+You think you are good at tic tac toe? Try and beat this AI.
 
 I created an AI that makes sure you can't win. You can tie against it, but winning is out of the picture.
 
